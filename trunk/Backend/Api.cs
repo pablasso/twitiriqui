@@ -31,6 +31,19 @@ namespace Twitiriqui.Backend
 {
     class Api
     {
+
+        NetworkCredential _credential;
+
+        NetworkCredential Credential
+        {
+            get
+            {
+                if (_credential == null)
+                    _credential = new NetworkCredential(Username, Password);
+                return _credential;
+            }
+        }
+
         public string Username { get; set; }
 
         public string Password { get; set; }
@@ -114,7 +127,7 @@ namespace Twitiriqui.Backend
         {
             var request = HttpWebRequest.Create(url) as HttpWebRequest;
             request.ServicePoint.Expect100Continue = false;
-            request.Credentials = GetCredentials();
+            request.Credentials = Credential;
 
             return request;
         }
@@ -145,11 +158,6 @@ namespace Twitiriqui.Backend
 
             return GetDocumentFromRequest(request);
 
-        }
-
-        NetworkCredential GetCredentials()
-        {
-            return new NetworkCredential(Username, Password);
         }
     }
 }
