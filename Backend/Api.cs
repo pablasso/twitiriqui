@@ -26,6 +26,7 @@ using System.Net;
 using System.Xml;
 using System.Xml.Linq;
 using System.Text;
+using System.Web;
 
 namespace Twitiriqui.Backend
 {
@@ -53,7 +54,7 @@ namespace Twitiriqui.Backend
             var document = GetDocumentFromRequest(string.Format("http://twitter.com/statuses/friends_timeline.xml?count=" + count));
 
             var results = from status in document.Descendants("status")
-                          select GetEntryFromXml(status);
+                          select GetStatusFromXml(status);
             return results;
         }
 
@@ -89,11 +90,11 @@ namespace Twitiriqui.Backend
                 Image = user.Element("profile_image_url").Value,
                 Followers = int.Parse(user.Element("followers_count").Value),
                 Url = user.Element("url").Value,
-                LastStatus = GetEntryFromXml(user.Element("status"))
+                LastStatus = GetStatusFromXml(user.Element("status"))
             };
         }
 
-        Status GetEntryFromXml(XElement status)
+        Status GetStatusFromXml(XElement status)
         {
             if (status == null)
                 return null;
@@ -117,9 +118,9 @@ namespace Twitiriqui.Backend
         public Status PostStatus(string status)
         {
             var url = "http://twitter.com/statuses/update.xml";
-            var data = "status=" + status;
+            var data = "status=" + HttpUtility.UrlEncode(status);
 
-            return GetEntryFromXml(GetDocumentFromRequestWithPostData(url, data).Descendants("status").First());
+            return GetStatusFromXml(GetDocumentFromRequestWithPostData(url, data).Descendants("status").First());
 
         }
 
