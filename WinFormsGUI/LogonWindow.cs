@@ -19,34 +19,39 @@
 */
 
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
 using System.Drawing;
-using System.Net;
+using System.Linq;
+using System.Text;
+using System.Windows.Forms;
+using Twitiriqui.Backend;
 
-namespace Twitiriqui.Backend
+namespace Twitiriqui.WinFormsGUI
 {
-    public class User
+    public partial class LogonWindow : Form
     {
-        public long ID;
-        public string Name;
-        public string ScreenName;
-        public string Location;
-        public string Description;
-        public string ImageUrl;
-        public string Url;
-        public int Followers;
-        public Status LastStatus;
-        Image _image;
-
-        public Image Image
+        public LogonWindow()
         {
-            get
+            InitializeComponent();
+        }
+
+        private void login_Click(object sender, EventArgs e)
+        {
+            try
             {
-                if (_image == null)
-                {
-                    var request = HttpWebRequest.Create(ImageUrl) as HttpWebRequest;
-                    _image = Image.FromStream(request.GetResponse().GetResponseStream());
-                }
-                return _image;
+                var api = new Api { Username = username.Text, Password = password.Text };
+                new MainViewWindow(api, api.GetFriends()).Show();
+                Hide();
+            }
+            catch (BadCredentialsException)
+            {
+                MessageBox.Show("Bad user");
+            }
+            catch (TwitterNotAvaibleException)
+            {
+                MessageBox.Show("Server down");
             }
         }
     }

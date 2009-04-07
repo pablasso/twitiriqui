@@ -1,0 +1,113 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!--/*
+    This file is part of Twitiriqui.
+
+    Twitiriqui is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Twitiriqui is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+  
+    Copyright 2009 Alberto Avila
+
+*/
+-->
+<html>
+	<head>
+		<title></title>
+		<style type="text/css">
+            * {
+                margin:0;
+                padding:0;
+            }
+		    .roster {
+		    	clear: both;
+		    	width: 150px;
+		    	text-align: center;
+		    }
+
+		    img {
+		    	height: 48px;
+		    	width: 48px;
+		    }
+		    .even {
+		    	background-color: #c7cde1;
+		    }
+		    .odd {
+		    	background-color: #f4f5f9;
+		    }
+		    .selected {
+		    	background-color: White;
+		        border: solid thin black;
+		        cursor: pointer;
+		    }
+		</style>
+		<script language="javascript" type="text/javascript" src="js/jquery.js"></script>
+		<script language="javascript" type="text/javascript">
+	        $(document).ready(function () {
+	            $("div.roster").mouseover(function(){
+	                $(this).addClass ("selected");
+	            }).mouseout(function(){
+	                $(this).removeClass ("selected");
+	            });
+	            
+	            $("div.roster").click(function(){
+	                document.location = "twitiriqui://user/" + $(this).attr("nick");
+	            });
+	        });	
+		   
+		    function appendElement (imageUrl, nickname)
+            {
+                addElement (imageUrl, nickname, "append");
+		    }
+		    function prependElement (imageUrl, nickname)
+		    {
+                addElement (imageUrl, nickname, "prepend");
+		    }
+		    
+		    function addElement (imageUrl, nickname, type)
+		    {
+		        var previous;
+		        if (type == "append")
+		            previous = $("div#bottom").prev ();
+		        else
+		            previous = $("div#top").next ();
+		           
+                var cssClass;
+		        if (previous.attr ("id") == "bottom" || previous.attr ("id") == "top") //if there are no items
+		            cssClass = "even"; 
+		        else 
+		            cssClass = previous.hasClass ("odd") ? "even" : "odd";
+                var content = 
+                    "<div class='roster @class' nick='@nick'><img src='@image' alt='@nick'/><p>@nick</p></div>"
+                    .replace (/@nick/g, nickname)
+                    .replace (/@image/g, imageUrl)
+                    .replace (/@class/g, cssClass);
+                    
+                var newElement;
+                
+                if (type == "append")
+                    newElement = $("div#bottom").before (content).prev ();
+                else
+                    newElement = $("div#top").after (content).next ();
+                    
+                newElement.mouseover(function(){
+	                $(this).addClass ("selected");
+	            }).mouseout(function(){
+	                $(this).removeClass ("selected");
+	            });
+		    }
+		</script>
+	</head>
+	<body>
+	    <div id="top"></div>
+	    <div id="bottom"></div>
+	</body>
+</html>

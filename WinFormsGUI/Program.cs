@@ -19,35 +19,23 @@
 */
 
 using System;
-using System.Drawing;
-using System.Net;
+using System.Collections.Generic;
+using System.Linq;
+using System.Windows.Forms;
 
-namespace Twitiriqui.Backend
+namespace Twitiriqui.WinFormsGUI
 {
-    public class User
+    static class Program
     {
-        public long ID;
-        public string Name;
-        public string ScreenName;
-        public string Location;
-        public string Description;
-        public string ImageUrl;
-        public string Url;
-        public int Followers;
-        public Status LastStatus;
-        Image _image;
-
-        public Image Image
+        /// <summary>
+        /// The main entry point for the application.
+        /// </summary>
+        [STAThread]
+        static void Main()
         {
-            get
-            {
-                if (_image == null)
-                {
-                    var request = HttpWebRequest.Create(ImageUrl) as HttpWebRequest;
-                    _image = Image.FromStream(request.GetResponse().GetResponseStream());
-                }
-                return _image;
-            }
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new LogonWindow());
         }
     }
 }
