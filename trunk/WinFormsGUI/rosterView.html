@@ -34,19 +34,24 @@
 		    }
 
 		    img {
-		    	height: 48px;
-		    	width: 48px;
+		    	height: 34px;
+		    	width: 34px;
+                -ms-interpolation-mode:bicubic;
 		    }
-		    .even {
-		    	background-color: #c7cde1;
+		    div.contactsBox {
+		    	width: 150px;
 		    }
-		    .odd {
-		    	background-color: #f4f5f9;
+		    span.contact {
+		    	margin: 2px 2px 2px 2px;
+		    	cursor: pointer;
 		    }
-		    .selected {
-		    	background-color: White;
-		        border: solid thin black;
-		        cursor: pointer;
+		    #currentUser
+		    {
+		    	position: absolute;
+		    }
+		    #currentUserImage {
+		    	width: 56px;
+		    	height: 56px;
 		    }
 		</style>
 		<script language="javascript" type="text/javascript" src="js/jquery.js"></script>
@@ -61,53 +66,47 @@
 	            $("div.roster").click(function(){
 	                document.location = "twitiriqui://user/" + $(this).attr("nick");
 	            });
+	            
+	            $("#currentUser").hide ();
+	            
+	            $(document).mousemove(function(e) {
+	                var x;
+                    var contactsWidth = parseInt ($("div.contactsBox").css ("width"));
+                    var imageWidth = parseInt ($("#currentUserImage").css ("width"));
+	                if (e.pageX > (contactsWidth - imageWidth))
+                        x = contactsWidth - imageWidth;
+	                else
+                        x = e.pageX;
+                    $("#currentUser").css({
+                        top: (e.pageY + 10)+ "px",
+                        left: x + "px"
+                    });
+	            });
 	        });	
 		   
-		    function appendElement (imageUrl, nickname)
-            {
-                addElement (imageUrl, nickname, "append");
-		    }
-		    function prependElement (imageUrl, nickname)
-		    {
-                addElement (imageUrl, nickname, "prepend");
-		    }
-		    
 		    function addElement (imageUrl, nickname, type)
 		    {
-		        var previous;
-		        if (type == "append")
-		            previous = $("div#bottom").prev ();
-		        else
-		            previous = $("div#top").next ();
-		           
-                var cssClass;
-		        if (previous.attr ("id") == "bottom" || previous.attr ("id") == "top") //if there are no items
-		            cssClass = "even"; 
-		        else 
-		            cssClass = previous.hasClass ("odd") ? "even" : "odd";
-                var content = 
-                    "<div class='roster @class' nick='@nick'><img src='@image' alt='@nick'/><p>@nick</p></div>"
-                    .replace (/@nick/g, nickname)
-                    .replace (/@image/g, imageUrl)
-                    .replace (/@class/g, cssClass);
-                    
-                var newElement;
-                
-                if (type == "append")
-                    newElement = $("div#bottom").before (content).prev ();
-                else
-                    newElement = $("div#top").after (content).next ();
-                    
-                newElement.mouseover(function(){
-	                $(this).addClass ("selected");
-	            }).mouseout(function(){
-	                $(this).removeClass ("selected");
-	            });
+		        var content = 
+		            "<span class='contact' nick='@nick'><img id='contact@nick' src='@url' alt=''/></span>"
+		            .replace (/@nick/g, nickname)
+                    .replace (/@url/g, imageUrl);
+
+		    
+		        $("div.contactsBox").append (content);
+		        $("#contact" + nickname).mouseover (function () {
+		            $("#currentUserImage").attr ("src", $(this).attr ("src"));
+		            $("#currentUser").show ();
+		        }).mouseout (function () {
+		            $("#currentUser").hide ();
+
+		        });
 		    }
 		</script>
 	</head>
 	<body>
-	    <div id="top"></div>
-	    <div id="bottom"></div>
+        <div class="contactsBox"></div>
+        <div id="currentUser">
+            <img src="" alt="" id="currentUserImage" />
+        </div>
 	</body>
 </html>
