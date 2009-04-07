@@ -30,7 +30,7 @@ using System.Web;
 
 namespace Twitiriqui.Backend
 {
-    class Api
+    public class Api
     {
 
         NetworkCredential _credential;
@@ -70,7 +70,7 @@ namespace Twitiriqui.Backend
 
         IEnumerable<User> GetUserList(XDocument document)
         {
-            var results = from user in document.Descendants("users")
+            var results = from user in document.Descendants ("user")
                           select GetUserFromXml(user);
 
             return results;
@@ -87,7 +87,7 @@ namespace Twitiriqui.Backend
                 Name = user.Element("name").Value,
                 ScreenName = user.Element("screen_name").Value,
                 Location = user.Element("location").Value,
-                Image = user.Element("profile_image_url").Value,
+                ImageUrl = user.Element("profile_image_url").Value,
                 Followers = int.Parse(user.Element("followers_count").Value),
                 Url = user.Element("url").Value,
                 LastStatus = GetStatusFromXml(user.Element("status"))
@@ -135,10 +135,23 @@ namespace Twitiriqui.Backend
 
         XDocument GetDocumentFromRequest(HttpWebRequest request)
         {
-            var stream = new StreamReader(request.GetResponse().GetResponseStream());
-            var document = XDocument.Load(stream);
-            stream.Close();
-            return document;
+            try
+            {
+                var stream = new StreamReader(request.GetResponse().GetResponseStream());
+                var document = XDocument.Load(stream);
+                stream.Close();
+                return document;
+            }
+            catch (WebException e)
+            {
+                var response = e.Response as HttpWebResponse;
+                if (response.StatusCode == HttpStatusCode.Unauthorized)
+                    throw new BadCredentialsException();
+                if (response.StatusCode == HttpStatusCode.BadGateway ||
+                    response.StatusCode == HttpStatusCode.ServiceUnavailable)
+                    throw new TwitterNotAvaibleException();
+                throw e;
+            }
         }
 
         XDocument GetDocumentFromRequest(string url)
