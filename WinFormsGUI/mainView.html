@@ -1,0 +1,75 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<!--/*
+    This file is part of Twitiriqui.
+
+    Twitiriqui is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Twitiriqui is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Twitiriqui.  If not, see <http://www.gnu.org/licenses/>.
+  
+    Copyright 2009 Alberto Avila
+
+*/
+-->
+<html>
+	<head>
+		<title></title>
+		<style type="text/css">
+            * {
+                margin:0;
+                padding:0;
+            }
+
+		    #messages img {
+		    	height: 48px;
+		    	width: 48px;
+		    	vertical-align: middle;
+		    	margin-right: 5px;
+                -ms-interpolation-mode:bicubic;
+		    }
+		    #messages p
+		    {
+		    	border-top: 1px dashed #D2DADA;
+		    }
+		    
+		    #messages
+		    {
+		    	float: left;
+		    }
+		</style>
+		<script language="javascript" type="text/javascript" src="js/jquery.js"></script>
+		<script language="javascript" type="text/javascript">
+	        $(document).ready(function () {
+	            
+	            
+	        });	
+		   
+		    
+		    function prependMessage (screenName, imageUrl, text)
+		    {
+		        var content =
+		            "<p><img src='@url'/>@screenName: @text</p>"
+		            .replace (/@url/g, imageUrl)
+		            .replace (/@screenName/g, screenName)
+		            .replace (/@text/g, text)
+		            
+		        $("#messages").append (content);
+		    }
+		    
+		    
+		</script>
+	</head>
+	<body>
+	<a href="twitiriqui://updateTimeline">Update</a>
+	    <div id="messages">
+	    </div>
+	</body>
+</html>

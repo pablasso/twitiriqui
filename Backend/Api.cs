@@ -49,13 +49,24 @@ namespace Twitiriqui.Backend
 
         public string Password { get; set; }
 
-        public IEnumerable<Status> GetFriendsTimeLine(int count)
+
+        IEnumerable<Status> GetFriendsTimeLine(string parameters)
         {
-            var document = GetDocumentFromRequest(string.Format("http://twitter.com/statuses/friends_timeline.xml?count=" + count));
+            var document = GetDocumentFromRequest("http://twitter.com/statuses/friends_timeline.xml?" + parameters);
 
             var results = from status in document.Descendants("status")
                           select GetStatusFromXml(status);
             return results;
+        }
+
+        public IEnumerable<Status> GetFriendsTimeLine(Status lastStatus)
+        {
+            return GetFriendsTimeLine("since_id=" + lastStatus.ID);
+        }
+
+        public IEnumerable<Status> GetFriendsTimeLine(int count)
+        {
+            return GetFriendsTimeLine("count=" + count);
         }
 
         public IEnumerable<User> GetFollowers()

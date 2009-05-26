@@ -77,6 +77,7 @@
             this.mainView.Size = new System.Drawing.Size(289, 444);
             this.mainView.TabIndex = 3;
             this.mainView.Navigating += new System.Windows.Forms.WebBrowserNavigatingEventHandler(this.mainView_Navigating);
+            this.mainView.DocumentCompleted += new System.Windows.Forms.WebBrowserDocumentCompletedEventHandler(this.mainView_DocumentCompleted);
             // 
             // MainViewWindow
             // 
