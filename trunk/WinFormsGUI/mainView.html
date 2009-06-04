@@ -53,23 +53,32 @@
 	        });	
 		   
 		    
+		    function appendMessage (screenName, imageUrl, text)
+		    {
+		    	$("#messages").append (formatMessageContent (screenName, imageUrl, text));
+		    }
+		    
 		    function prependMessage (screenName, imageUrl, text)
 		    {
-		        var content =
-		            "<p><img src='@url'/>@screenName: @text</p>"
+		        $("#messages").prepend (formatMessageContent (screenName, imageUrl, text));
+		    }
+		    
+		    function formatMessageContent (screenName, imageUrl, text)
+		    {
+		        return ("<p><img src='@url'/>@screenName: @text</p>"
 		            .replace (/@url/g, imageUrl)
 		            .replace (/@screenName/g, screenName)
-		            .replace (/@text/g, text)
+		            .replace (/@text/g, text));
 		            
-		        $("#messages").append (content);
 		    }
 		    
 		    
 		</script>
 	</head>
 	<body>
-	<a href="twitiriqui://updateTimeline">Update</a>
+	<p><a href="twitiriqui://updateTimeline">Newer</a></p>
 	    <div id="messages">
 	    </div>
+	    <p><a href="twitiriqui://getPreviousMessages/">Older</a></p>
 	</body>
 </html>
