@@ -59,6 +59,13 @@ namespace Twitiriqui.Backend
             return results;
         }
 
+        public IEnumerable<Status> GetFriendsTimeLine(Status status, bool getNewerStatus)
+        {
+            if (getNewerStatus)
+                return GetFriendsTimeLine(status);
+            return GetFriendsTimeLine("count=21&max_id=" + status.ID);
+        }
+
         public IEnumerable<Status> GetFriendsTimeLine(Status lastStatus)
         {
             return GetFriendsTimeLine("since_id=" + lastStatus.ID);
@@ -155,6 +162,8 @@ namespace Twitiriqui.Backend
             }
             catch (WebException e)
             {
+                if (e.Status == WebExceptionStatus.ReceiveFailure)
+                    throw new TwitterNotAvaibleException();
                 var response = e.Response as HttpWebResponse;
                 if (response.StatusCode == HttpStatusCode.Unauthorized)
                     throw new BadCredentialsException();
