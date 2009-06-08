@@ -122,7 +122,10 @@ namespace Twitiriqui.Backend
                 Source = status.Element("source").Value,
                 Text = status.Element("text").Value,
                 CreationDateFromUTCString = status.Element("created_at").Value,
-                User = GetUserFromXml(status.Element("user"))
+                User = GetUserFromXml(status.Element("user")),
+                InReplyToStatudID = status.Element("in_reply_to_status_id").Value == "" ? 
+                    0 : long.Parse (status.Element("in_reply_to_status_id").Value),
+                InReplyToScreenName = status.Element ("in_reply_to_screen_name").Value
             };
         }
 
@@ -131,14 +134,21 @@ namespace Twitiriqui.Backend
             return GetFriendsTimeLine(20);
         }
 
-
-
-        public Status PostStatus(string status)
+        public Status PostStatus(string status, string inReplyTo)
         {
             var url = "http://twitter.com/statuses/update.xml";
             var data = "status=" + HttpUtility.UrlEncode(status);
+            if (inReplyTo != null)
+            {
+                data += "&in_reply_to_status_id=" + inReplyTo;
+            }
 
             return GetStatusFromXml(GetDocumentFromRequestWithPostData(url, data).Descendants("status").First());
+        }
+
+        public Status PostStatus(string status)
+        {
+            return PostStatus(status, null);
 
         }
 

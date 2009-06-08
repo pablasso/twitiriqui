@@ -55,6 +55,7 @@
             this.input.Size = new System.Drawing.Size(355, 29);
             this.input.TabIndex = 1;
             this.input.Text = "";
+            this.input.TextChanged += new System.EventHandler(this.input_TextChanged);
             // 
             // send
             // 
@@ -65,6 +66,7 @@
             this.send.TabIndex = 2;
             this.send.Text = "Send";
             this.send.UseVisualStyleBackColor = true;
+            this.send.Click += new System.EventHandler(this.send_Click);
             // 
             // mainView
             // 

@@ -44,8 +44,21 @@
 		    {
 		    	float: left;
 		    }
+		    .footer
+		    {
+		    	cursor: pointer;
+		    	text-decoration: underline;
+		    	color: Blue;
+		    }
+		    .reply
+		    {
+		    	cursor: pointer;
+		    	text-decoration: underline;
+		    	color: Blue;
+		    }
 		</style>
 		<script language="javascript" type="text/javascript" src="js/jquery.js"></script>
+		<script language="javascript" type="text/javascript" src="js/jquery.scrollTo.js"></script>
 		<script language="javascript" type="text/javascript">
 	        $(document).ready(function () {
 	            
@@ -53,23 +66,64 @@
 	        });	
 		   
 		    
-		    function appendMessage (screenName, imageUrl, text)
+		    function appendMessage (screenName, imageUrl, text, id, inReplyToId, inReplyToUser)
 		    {
-		    	$("#messages").append (formatMessageContent (screenName, imageUrl, text));
+		    	insertMessage (true, screenName, imageUrl, text, id, inReplyToId, inReplyToUser, false);
 		    }
 		    
-		    function prependMessage (screenName, imageUrl, text)
+		    function prependMessage (screenName, imageUrl, text, id, inReplyToId, inReplyToUser)
 		    {
-		        $("#messages").prepend (formatMessageContent (screenName, imageUrl, text));
+		        insertMessage (false, screenName, imageUrl, text, id, inReplyToId, inReplyToUser, false);
 		    }
 		    
-		    function formatMessageContent (screenName, imageUrl, text)
+		    function addTemporalReplyMessage (screenName, imageUrl, text, id, inReplyToId, inReplyToUser)
 		    {
-		        return ("<p><img src='@url'/>@screenName: @text</p>"
+		        insertMessage (false, screenName, imageUrl, text, id, inReplyToId, inReplyToUser, true);
+		    }
+		    
+		    function insertMessage (isAppend, screenName, imageUrl, text, id, inReplyToId, inReplyToUser, temporal)
+		    {
+		        var data = (
+		            "<p id='r@id' type='@type'><span class='image'><img src='@url'/></span><span class='status'>@screenName: @text</span>"
 		            .replace (/@url/g, imageUrl)
 		            .replace (/@screenName/g, screenName)
-		            .replace (/@text/g, text));
-		            
+		            .replace (/@text/g, text)
+                );
+                
+                data = (data
+                    .replace (/@id/g, id)
+                    .replace (/@type/g, temporal ? "temporal" : "permanent")
+               ); //IE goes crazy with too many .replace() chained
+               
+               data += "<span class='reply' rid='@id' rs='@screenName'>Reply</span>".replace (/@id/g, id).replace (/@screenName/g, screenName)
+		       
+		       if (inReplyToId != 0)
+		            data += "<span class='footer' sid='r@id'>in reply to @user</span>"
+		                .replace (/@id/g, inReplyToId)
+		                .replace (/@user/g, inReplyToUser);
+		              
+                data += "</p>";
+                
+                $("#r" + id + "[type=\"temporal\"]").remove ();
+                
+                if (isAppend)
+                    $("#messages").append (data);
+                else
+                    $("#messages").prepend (data);
+                
+                $(".footer").unbind ("click").click (function ()
+                {
+                    var targetID = "#" + $(this).attr ("sid");
+                    if ($(targetID).length > 0)
+                        $.scrollTo (targetID, 500); 
+                    else; //get post
+                });
+                
+                $(".reply").unbind ("click").click (function ()
+                {
+                    document.location.href = "twitiriqui://reply/@id/@screenName".
+                        replace (/@id/g, $(this).attr("rid")).replace (/@screenName/g, $(this).attr("rs"));
+                });
 		    }
 		    
 		    

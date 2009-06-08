@@ -66,5 +66,7 @@ namespace Twitiriqui.Backend
         public string Text;
         public string Source;
         public User User;
+        public long InReplyToStatudID;
+        public string InReplyToScreenName;
     }
 }
