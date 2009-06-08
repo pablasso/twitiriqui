@@ -102,6 +102,9 @@
     <Content Include="js\jquery.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="js\jquery.scrollTo.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="mainView.html">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
