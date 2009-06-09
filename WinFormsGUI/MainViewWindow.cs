@@ -204,15 +204,15 @@ namespace Twitiriqui.WinFormsGUI
         private void send_Click(object sender, EventArgs e)
         {
             setReplyState(false);
-            input.Text = "";
             ThreadPool.QueueUserWorkItem(delegate(object x)
             {
                 var data = x as string[];
                 var status = api.PostStatus(data[0], data[1]);
                 this.BeginInvoke ((Func<Status, int>)delegate (Status y)
                 {
+                    input.Text = "";
                     input.Focus();
-                    insertTimelineMessage (status, false, true);
+                    insertTimelineMessage (y, false, true);
                     return 0;
                 }, status);
 
