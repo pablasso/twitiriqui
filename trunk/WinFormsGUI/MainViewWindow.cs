@@ -26,6 +26,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Threading;
 using Twitiriqui.Backend;
 using System.Text.RegularExpressions;
 
@@ -58,7 +59,7 @@ namespace Twitiriqui.WinFormsGUI
             this.rosterList = rosterList;
             roster.Navigate(Application.StartupPath + "/rosterView.html");
             mainView.Navigate(Application.StartupPath + "/mainView.html");
-            var timer = new Timer ();
+            var timer = new System.Windows.Forms.Timer ();
             timer.Interval = 60 * 1000;
             timer.Tick += (x, y) => insertTimelineMessagesAsync(newestStatus, true);
             timer.Enabled = true;
@@ -66,7 +67,7 @@ namespace Twitiriqui.WinFormsGUI
 
         void insertTimelineMessagesAsync (Status status, bool getNewer)
         {
-            System.Threading.ThreadPool.QueueUserWorkItem(insertTimelineMessagesAsync, new object[] { status, getNewer });
+            ThreadPool.QueueUserWorkItem(insertTimelineMessagesAsync, new object[] { status, getNewer });
         }
 
         void insertTimelineMessagesAsync (object o)
@@ -178,6 +179,7 @@ namespace Twitiriqui.WinFormsGUI
                 replyToID = Url.Segments [1].Trim ('/');
                 input.Text = string.Format("@{0} {1}", replyToUser, input.Text);
                 input.BackColor = Color.Wheat;
+                input.SelectionStart = input.SelectionStart + replyToUser.Length + 2;
                 input.Focus();
             }
         }
@@ -186,16 +188,14 @@ namespace Twitiriqui.WinFormsGUI
         {
             if (replyToUser != "" && !input.Text.StartsWith("@" + replyToUser))
             {
-                replyToUser = "";
-                replyToID = "";
-                input.BackColor = Color.White;
+                setReplyState(false);
             }
             else if (replyToUser == "")
             {
                 var trimedInput = input.Text.TrimStart ();
                 if (trimedInput.StartsWith ("@") && trimedInput.Contains (" "))
                 {
-                    input.BackColor = Color.Wheat;
+                    setReplyState(true);
                     replyToUser = trimedInput.Substring (1, trimedInput.IndexOf (" ") - 1);
                 }
             }
@@ -203,14 +203,29 @@ namespace Twitiriqui.WinFormsGUI
 
         private void send_Click(object sender, EventArgs e)
         {
-            var status = api.PostStatus (input.Text.Trim (), replyToID);
-            replyToID = "";
-            replyToUser = "";
-            input.BackColor = Color.White;
-            insertTimelineMessage (status, false, true);
+            setReplyState(false);
             input.Text = "";
-            input.Focus();
+            ThreadPool.QueueUserWorkItem(delegate(object x)
+            {
+                var data = x as string[];
+                var status = api.PostStatus(data[0], data[1]);
+                this.BeginInvoke ((Func<Status, int>)delegate (Status y)
+                {
+                    input.Focus();
+                    insertTimelineMessage (status, false, true);
+                    return 0;
+                }, status);
 
+            }, new[] { input.Text.Trim(), replyToID });
+        }
+
+        void setReplyState(bool isReply)
+        {
+            input.BackColor = isReply ? Color.Wheat : Color.White;
+            if (!isReply)
+            {
+                replyToID = replyToUser = "";
+            }
         }
 
 
